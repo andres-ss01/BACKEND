@@ -2,7 +2,12 @@
 // server.js - Punto de entrada principal de la aplicación
 // -----------------------------------------------------------------------------
 // La clase "Server" encapsula Express: middlewares, rutas, manejo de errores
-// y arranque (conexión a MySQL + escucha del puerto).
+// y arranque.
+//
+// Funciona en dos modos:
+//  - Servidor tradicional (local, Render, Railway): abre un puerto con listen().
+//  - Vercel (serverless): NO abre puerto; Vercel usa la app exportada al final
+//    del archivo (export default). La base de datos se conecta bajo demanda.
 // =============================================================================
 
 import "dotenv/config"; // Carga las variables del archivo .env en process.env
@@ -33,7 +38,7 @@ class Server {
 
   // Registro de rutas
   initRoutes() {
-    // Ruta raíz: sirve como "health check" para Render/Railway
+    // Ruta raíz: sirve como "health check"
     this.app.get("/", (req, res) => {
       res.json({
         message: "API E-commerce (MySQL) funcionando correctamente",
@@ -49,7 +54,7 @@ class Server {
     this.app.use(errorHandler);
   }
 
-  // Arranque: primero MySQL, luego el puerto
+  // Arranque tradicional: primero MySQL, luego el puerto
   async start() {
     try {
       await this.database.connect();
@@ -63,4 +68,13 @@ class Server {
   }
 }
 
-new Server().start();
+const server = new Server();
+
+// Vercel define la variable VERCEL=1. En ese caso no se abre un puerto:
+// la plataforma ejecuta la app exportada abajo, y MySQL se conecta en la primera consulta.
+if (!process.env.VERCEL) {
+  server.start();
+}
+
+// Exportación por defecto que Vercel necesita para detectar la app Express
+export default server.app;
