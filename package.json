@@ -1,0 +1,20 @@
+{
+  "name": "ecommerce-api-mysql",
+  "version": "1.0.0",
+  "description": "API REST de e-commerce (estilo FakeStoreAPI) con Node.js, Express, MVC, POO y MySQL",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node src/seed/seed.js"
+  },
+  "engines": { "node": ">=18.0.0" },
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mysql2": "^3.11.5"
+  }
+}
